@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+  id          String            @id @default(uuid())
+  photoUrl    String?           @db.VarChar(2048)
+  email       String            @db.VarChar(255)
+  password    String            @db.Text
+  name        String            @db.VarChar(255)
+  cpf         String?           @db.VarChar(255)
+  phone       String?           @db.VarChar(255)
+  birth       DateTime?         @db.DateTime(0)
+  profileType user_profileType  @default(value: USER)
+  token       String?           @db.Text
+  deletedAt   DateTime?         @db.DateTime(0)
+  createdAt   DateTime?         @db.DateTime(0)
+  updatedAt   DateTime?         @db.DateTime(0)
+  createdBy   String?           @db.Char(36)
+  deletedBy   String?           @db.Char(36)
+  updatedBy   String?           @db.Char(36)
+}
+
+enum user_profileType {
+  USER
+  ADMIN
+}
