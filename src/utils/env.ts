@@ -10,4 +10,6 @@ export const env = {
   DB_PASSWORD: getEnv('DB_PASSWORD') || 'root',
   DB_HOST: getEnv('DB_HOST') || 'localhost',
   HASH_SALT: Number(getEnv('HASH_SALT')) || 8,
+  JWT_SECRET: getEnv('JWT_SECRET') || 'a-rose-is-magnific',
+  JWT_QR_SECRET: getEnv('JWT_QR_SECRET') || 'a-lily-is-magnific',
 };

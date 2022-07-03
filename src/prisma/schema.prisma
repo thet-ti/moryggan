@@ -24,9 +24,38 @@ model user {
   createdBy   String?           @db.Char(36)
   deletedBy   String?           @db.Char(36)
   updatedBy   String?           @db.Char(36)
+         
+  qr_code     qr_code?           
+}
+
+model qr_code {
+  id          String            @id @default(uuid())
+  userId      String            @unique
+  user        user              @relation(fields: [userId], references: [id])
+  activatedAt DateTime?         @db.DateTime(0)
+  activatedBy String?           @unique
+  device      device?           @relation(fields: [activatedBy], references: [id])
+  deletedAt   DateTime?         @db.DateTime(0)
+  createdAt   DateTime?         @db.DateTime(0)
+  createdBy   String?           @db.Char(36)
+  deletedBy   String?           @db.Char(36)
+}
+
+model device {
+  id          String            @id @default(uuid())
+  name        String?
+  model       String?
+  OS          String?
+  version     String?
+  qr_code     qr_code?
+  deletedAt   DateTime?         @db.DateTime(0)
+  createdAt   DateTime?         @db.DateTime(0)
+  createdBy   String?           @db.Char(36)
+  deletedBy   String?           @db.Char(36)
 }
 
 enum user_profileType {
   USER
   ADMIN
 }
+

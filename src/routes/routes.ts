@@ -14,7 +14,8 @@ fs
     // eslint-disable-next-line import/no-dynamic-require
     const controller = require(path.join(controllersDir, f)).default;
 
-    router.use(`/${f.replace('_controller.ts', '')}`, controller);
+    if (controller) { router.use(`/${f.replace('_controller.ts', '')}`, controller); }
+
   });
 
 export { router };
