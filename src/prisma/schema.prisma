@@ -19,13 +19,18 @@ model user {
   profileType user_profileType  @default(value: USER)
   token       String?           @db.Text
   deletedAt   DateTime?         @db.DateTime(0)
-  createdAt   DateTime?         @db.DateTime(0)
+  createdAt   DateTime?         @default(now())
   updatedAt   DateTime?         @db.DateTime(0)
   createdBy   String?           @db.Char(36)
   deletedBy   String?           @db.Char(36)
   updatedBy   String?           @db.Char(36)
          
   qr_code     qr_code?           
+}
+
+enum user_profileType {
+  USER
+  ADMIN
 }
 
 model qr_code {
@@ -36,7 +41,7 @@ model qr_code {
   activatedBy String?           @unique
   device      device?           @relation(fields: [activatedBy], references: [id])
   deletedAt   DateTime?         @db.DateTime(0)
-  createdAt   DateTime?         @db.DateTime(0)
+  createdAt   DateTime?         @default(now())
   createdBy   String?           @db.Char(36)
   deletedBy   String?           @db.Char(36)
 }
@@ -49,13 +54,108 @@ model device {
   version     String?
   qr_code     qr_code?
   deletedAt   DateTime?         @db.DateTime(0)
-  createdAt   DateTime?         @db.DateTime(0)
+  createdAt   DateTime?         @default(now())
   createdBy   String?           @db.Char(36)
   deletedBy   String?           @db.Char(36)
 }
 
-enum user_profileType {
-  USER
-  ADMIN
+model product {
+  id          String            @id @default(uuid())
+  productId   String?
+
+  name        String
+  listPrice   Decimal           @db.Decimal(10,2)
+  photoUrl    String?           @db.VarChar(2048)
+  color       String?
+
+  categoryId  String
+  category    category          @relation(fields: [categoryId], references: [id])
+
+  deletedAt   DateTime?         @db.DateTime(0)
+  createdAt   DateTime?         @default(now())
+  createdBy   String?           @db.Char(36)
+  deletedBy   String?           @db.Char(36)
+  updatedBy   String?           @db.Char(36)
+  updatedAt   DateTime?         @db.DateTime(0)
+
+  products    voucher_product[]
 }
 
+model category {
+  id          String            @id @default(uuid())
+  name        String
+  photoUrl    String?           @db.VarChar(2048)
+  
+  deletedAt   DateTime?         @db.DateTime(0)
+  createdAt   DateTime?         @default(now())
+  createdBy   String?           @db.Char(36)
+  deletedBy   String?           @db.Char(36)
+  updatedBy   String?           @db.Char(36)
+  updatedAt   DateTime?         @db.DateTime(0)
+
+  products    product[]
+}
+
+model voucher {
+  id          String             @id @default(uuid())
+
+  voucherId   Int                
+
+  clientName  String
+  cpf         String?
+
+  totalPrice  Decimal            @db.Decimal(10,2)
+  status      voucher_statusType @default(value: OPEN)
+
+  deletedAt   DateTime?          @db.DateTime(0)
+  createdAt   DateTime?          @default(now())
+  createdBy   String?            @db.Char(36)
+  deletedBy   String?            @db.Char(36)
+  updatedBy   String?            @db.Char(36)
+  updatedAt   DateTime?          @db.DateTime(0)
+
+  tableId     String?
+  table       table?             @relation(fields: [tableId], references: [id])
+
+  products    voucher_product[]
+
+}
+
+enum voucher_statusType {
+  OPEN
+  CLOSED
+}
+
+model voucher_product {
+  voucher     voucher   @relation(fields: [voucherId], references: [id])
+  voucherId   String
+  product     product   @relation(fields: [productId], references: [id])
+  productId   String
+
+  assignedAt  DateTime @default(now())
+  assignedBy  String
+  deletedAt   DateTime?         @db.DateTime(0)
+  deletedBy   String?           @db.Char(36)
+
+  @@id([voucherId, productId])
+}
+
+model table {
+  id          String               @id @default(uuid())
+
+  tableId     Int
+
+  deletedAt   DateTime?         @db.DateTime(0)
+  createdAt   DateTime?         @default(now())
+  createdBy   String?           @db.Char(36)
+  deletedBy   String?           @db.Char(36)
+  updatedBy   String?           @db.Char(36)
+  updatedAt   DateTime?         @db.DateTime(0)
+
+  vouchers    voucher[]
+}
+
+enum table_statusType {
+  FREE
+  BUSY
+}

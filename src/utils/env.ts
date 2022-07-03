@@ -12,4 +12,8 @@ export const env = {
   HASH_SALT: Number(getEnv('HASH_SALT')) || 8,
   JWT_SECRET: getEnv('JWT_SECRET') || 'a-rose-is-magnific',
   JWT_QR_SECRET: getEnv('JWT_QR_SECRET') || 'a-lily-is-magnific',
+  AWS_ACCESS_KEY_ID: getEnv('AWS_ACCESS_KEY_ID') || '',
+  AWS_SECRET_ACCESS_KEY: getEnv('AWS_SECRET_ACCESS_KEY') || '',
+  AWS_BUCKET: getEnv('AWS_BUCKET') || '',
+  AWS_REGION: getEnv('AWS_REGION') || '',
 };

@@ -5,10 +5,11 @@ import jwt from 'jsonwebtoken';
 import prisma, { excludeFields } from '../prisma/client';
 import { env } from '../utils/env';
 import { HashService } from '../utils/hash';
+import { AwsService } from './aws_service';
 
 export class UserService {
   static async create(
-    userData : Prisma.userCreateInput,
+    userData : Prisma.userCreateInput & { photo?: string},
     actor?: Omit<user, 'password'>,
   ) : Promise<Omit<user, 'password'>> {
 
@@ -19,6 +20,14 @@ export class UserService {
     if (findUser) {
       throw httpStatus['409_MESSAGE'];
     }
+
+    if (userData.photo) {
+      const { Location } = await AwsService.uploadBase64(userData.photo);
+
+      userData.photoUrl = Location;
+    }
+
+    delete userData.photo;
 
     userData = {
       ...userData,
@@ -61,7 +70,15 @@ export class UserService {
       where: { deletedAt: null },
     });
 
-    return findUsers;
+    const countUsers = await prisma.user.count({
+      where: { deletedAt: null },
+    });
+
+    return {
+      count: countUsers,
+      rows: findUsers,
+    };
+
   }
 
   static async getById(id : string, args?: Prisma.userFindFirstArgs) {
@@ -85,7 +102,11 @@ export class UserService {
     return findUser;
   }
 
-  static async updateById(id : string, userData: Prisma.userUpdateInput, actor?: Omit<user, 'password'>) {
+  static async updateById(
+    id : string,
+    userData: Prisma.userUpdateInput & { photo?: string},
+    actor?: Omit<user, 'password'>,
+  ) {
     const findUser = await prisma.user.findFirst({
       where: { id, deletedAt: null },
       select: excludeFields('User', ['password']),
@@ -93,6 +114,12 @@ export class UserService {
 
     if (!findUser) {
       throw httpStatus['404_MESSAGE'];
+    }
+
+    if (userData.photo) {
+      const { Location } = await AwsService.uploadBase64(userData.photo);
+
+      userData.photoUrl = Location;
     }
 
     userData = {
