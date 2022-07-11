@@ -104,7 +104,7 @@ model voucher {
   clientName  String
   cpf         String?
 
-  totalPrice  Decimal            @db.Decimal(10,2)
+  totalPrice  Decimal?           @db.Decimal(10,2)
   status      voucher_statusType @default(value: OPEN)
 
   deletedAt   DateTime?          @db.DateTime(0)
@@ -113,9 +113,6 @@ model voucher {
   deletedBy   String?            @db.Char(36)
   updatedBy   String?            @db.Char(36)
   updatedAt   DateTime?          @db.DateTime(0)
-
-  tableId     String?
-  table       table?             @relation(fields: [tableId], references: [id])
 
   products    voucher_product[]
 
@@ -126,36 +123,24 @@ enum voucher_statusType {
   CLOSED
 }
 
+enum voucher_product_statusType {
+  PREPARATION
+  DELIVERED
+}
+
 model voucher_product {
   voucher     voucher   @relation(fields: [voucherId], references: [id])
   voucherId   String
   product     product   @relation(fields: [productId], references: [id])
   productId   String
 
+
+  quantity    Int       @default(1)
+
   assignedAt  DateTime @default(now())
-  assignedBy  String
+  assignedBy  String?
   deletedAt   DateTime?         @db.DateTime(0)
   deletedBy   String?           @db.Char(36)
 
   @@id([voucherId, productId])
-}
-
-model table {
-  id          String               @id @default(uuid())
-
-  tableId     Int
-
-  deletedAt   DateTime?         @db.DateTime(0)
-  createdAt   DateTime?         @default(now())
-  createdBy   String?           @db.Char(36)
-  deletedBy   String?           @db.Char(36)
-  updatedBy   String?           @db.Char(36)
-  updatedAt   DateTime?         @db.DateTime(0)
-
-  vouchers    voucher[]
-}
-
-enum table_statusType {
-  FREE
-  BUSY
 }

@@ -9,7 +9,9 @@
     "lint": "lint-staged",
     "db:generate": "npx prisma generate",
     "db:migration-generate": "npx prisma migrate dev --name",
-    "seed:db": "ts-node src/prisma/seeders/index.ts"
+    "db:seed": "ts-node src/prisma/seeders/index.ts",
+    "db:migration":"npx prisma migrate dev",
+    "db:update": "npm run db:migration && npm run db:seed && npm run db:generate"
   },
   "lint-staged": {
     "*.js": [
